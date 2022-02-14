@@ -6,7 +6,7 @@
 /*   By: msukri <msukri@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/16 15:14:21 by msukri            #+#    #+#             */
-/*   Updated: 2022/02/14 14:46:34 by msukri           ###   ########.fr       */
+/*   Updated: 2022/02/15 07:45:24 by msukri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,8 @@ char	ft_solve_n_line(char *buf, ssize_t *r, char **n_line, char ***line)
 	
 	while (!ft_strchr(*n_line, '\n') && *r > 0)
 	{
+		if (ft_strlen(*n_line) > 0)
+			*r = read(3, buf, BUFFER_SIZE);
 		buf[*r] = '\0';
 		tmp = ft_strjoin(*n_line, buf);
 		ft_memfree((void ***)&n_line);
