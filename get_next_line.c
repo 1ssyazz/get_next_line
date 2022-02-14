@@ -6,7 +6,7 @@
 /*   By: msukri <msukri@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/16 15:14:21 by msukri            #+#    #+#             */
-/*   Updated: 2021/12/21 12:49:11 by msukri           ###   ########.fr       */
+/*   Updated: 2022/02/14 14:46:34 by msukri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,31 +46,53 @@ char	*ft_strchr(const char *str, int c)
 	return ((char *)&str[i]);
 }
 
-void	ft_solve_n_line(char *buf, ssize_t r, char *tmp, char *n_line)
+char	ft_solve_n_line(char *buf, ssize_t *r, char **n_line, char ***line)
 {
-	buf[r] = '\0';
-	tmp = ft_strjoin(n_line, buf);
-	ft_memfree((void **)&n_line);
-	n_line = tmp;
+	char	*tmp;
+	
+	while (!ft_strchr(*n_line, '\n') && *r > 0)
+	{
+		buf[*r] = '\0';
+		tmp = ft_strjoin(*n_line, buf);
+		ft_memfree((void ***)&n_line);
+		*n_line = tmp;
+	}
+	if (*r == 0)
+		**line = ft_strdup(*n_line);
+	else if (*r > 0)
+		**line = ft_substr(*n_line, 0, (ft_strchr(*n_line, '\n') - *n_line));
+	else
+		return (-1);
+	if (*r > 0)
+		tmp = ft_strdup(*n_line + (ft_strlen(**line) + 1));
+	else
+		tmp = ft_strdup(*n_line + (ft_strlen(**line)));
+	ft_memfree((void ***)&n_line);
+	*n_line = tmp;
+	return (*tmp);
 }
 
 int	get_next_line(int fd, char **line)
 {
 	ssize_t		r;
-	char		*buf;
-	int			i;
+	char		buf[BUFFER_SIZE + 1];
 	static char	*n_line;
-	char		*tmp;
 
-	i = BUFFER_SIZE + 1;
-	r = read(fd, buf[i], BUFFER_SIZE);
-	n_line == NULL;
+	r = 1;
+	if (!n_line)
+	{
+		r = read(fd, buf, BUFFER_SIZE);
+		n_line = NULL;
+	}
 	if (fd < 0 || !line || BUFFER_SIZE <= 0)
 		return (-1);
 	if (n_line == NULL)
 		n_line = ft_calloc(1 * sizeof(char));
 	else
 		NULL;
-	while (!ft_strchr(n_line, '\n') && r > 0)
-		ft_solve_n_line(buf, r, tmp, n_line);
+	ft_solve_n_line(buf, &r, &n_line, &line);
+	if (r == 0)
+		return (0 * ft_memfree((void ***)&n_line));
+	else
+		return (1);
 }
