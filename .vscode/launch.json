@@ -10,7 +10,7 @@
 			"type": "cppdbg",
 			"request": "launch",
 			"program": "${workspaceFolder}/a.out",
-			"args": ["${workspaceFolder}/tests/files/part1_test01_with_lines"],
+			"args": ["${workspaceFolder}/tests/files/part1_test01_with_lines","${workspaceFolder}/tests/files/part1_test01_with_lines_copy","${workspaceFolder}/tests/files/part1_test01_with_lines_copy_2"],
 			"stopAtEntry": true,
 			"cwd": "${fileDirname}",
 			"environment": [],
