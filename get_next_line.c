@@ -6,7 +6,7 @@
 /*   By: msukri <msukri@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/16 15:14:21 by msukri            #+#    #+#             */
-/*   Updated: 2022/02/15 07:45:24 by msukri           ###   ########.fr       */
+/*   Updated: 2022/02/17 19:00:14 by msukri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,55 +46,49 @@ char	*ft_strchr(const char *str, int c)
 	return ((char *)&str[i]);
 }
 
-char	ft_solve_n_line(char *buf, ssize_t *r, char **n_line, char ***line)
+char	*ft_solve_n_line(ssize_t r, char **n_line, char **tmp)
 {
-	char	*tmp;
-	
-	while (!ft_strchr(*n_line, '\n') && *r > 0)
-	{
-		if (ft_strlen(*n_line) > 0)
-			*r = read(3, buf, BUFFER_SIZE);
-		buf[*r] = '\0';
-		tmp = ft_strjoin(*n_line, buf);
-		ft_memfree((void ***)&n_line);
-		*n_line = tmp;
-	}
-	if (*r == 0)
-		**line = ft_strdup(*n_line);
-	else if (*r > 0)
-		**line = ft_substr(*n_line, 0, (ft_strchr(*n_line, '\n') - *n_line));
-	else
-		return (-1);
-	if (*r > 0)
-		tmp = ft_strdup(*n_line + (ft_strlen(**line) + 1));
-	else
-		tmp = ft_strdup(*n_line + (ft_strlen(**line)));
-	ft_memfree((void ***)&n_line);
-	*n_line = tmp;
-	return (*tmp);
+	char	*line;
+
+	line = NULL;
+	if (r == 0)
+		line = ft_strdup(*n_line);
+	else if (r > 0)
+		line = ft_substr(*n_line, 0, (ft_strchr(*n_line, '\n') - *n_line + 1));
+	*tmp = ft_strdup(*n_line + (ft_strlen(line)));
+	ft_memfree((void **)n_line);
+	*n_line = *tmp;
+	if (r <= 0)
+		ft_memfree((void **)n_line);
+	if (!*line)
+		ft_memfree((void **)&line);
+	return (line);
 }
 
-int	get_next_line(int fd, char **line)
+char	*get_next_line(int fd)
 {
 	ssize_t		r;
 	char		buf[BUFFER_SIZE + 1];
-	static char	*n_line;
+	static char	*n_line = NULL;
+	char		*tmp;
 
 	r = 1;
-	if (!n_line)
-	{
-		r = read(fd, buf, BUFFER_SIZE);
-		n_line = NULL;
-	}
-	if (fd < 0 || !line || BUFFER_SIZE <= 0)
-		return (-1);
+	if (fd < 0 || BUFFER_SIZE <= 0)
+		return (NULL);
 	if (n_line == NULL)
 		n_line = ft_calloc(1 * sizeof(char));
-	else
-		NULL;
-	ft_solve_n_line(buf, &r, &n_line, &line);
-	if (r == 0)
-		return (0 * ft_memfree((void ***)&n_line));
-	else
-		return (1);
+	while (!ft_strchr(n_line, '\n') && r > 0)
+	{
+		r = read(fd, buf, BUFFER_SIZE);
+		if (r < 0)
+		{
+			ft_memfree((void **)&n_line);
+			return (NULL);
+		}
+		buf[r] = '\0';
+		tmp = ft_strjoin(n_line, buf);
+		ft_memfree((void **)&n_line);
+		n_line = tmp;
+	}
+	return (ft_solve_n_line(r, (char **)&n_line, &tmp));
 }
